@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,9 +12,13 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Studio Booking API")
 
+# Comma-separated list of allowed origins, e.g.
+# "http://localhost:5173,https://studio-booking.onrender.com"
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
