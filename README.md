@@ -83,11 +83,56 @@ npm run dev
 Runs on `http://localhost:5173` by default, pointed at the backend via
 `VITE_API_URL` (defaults to `http://localhost:8000`).
 
+## Deployment notes
+
+Deployed on Render: PostgreSQL (managed), backend as a Web Service,
+frontend as a Static Site. A few things worth knowing if you're
+redeploying or forking this:
+
+- **CORS**: the backend reads allowed origins from an `ALLOWED_ORIGINS`
+  env var (comma-separated), defaulting to `http://localhost:5173` for
+  local dev. Set it to the deployed frontend's exact URL (no trailing
+  slash) in production.
+- **bcrypt/passlib compatibility**: newer `bcrypt` releases break
+  `passlib`'s internal version check, causing a confusing
+  "password cannot be longer than 72 bytes" error on registration.
+  `requirements.txt` pins `bcrypt==4.0.1` to avoid this.
+- **SPA routing on Render's static hosting**: without a rewrite rule,
+  refreshing on any route other than `/` (e.g. `/dashboard`) 404s,
+  since the host looks for a matching file rather than deferring to
+  React Router. Fixed via a Redirect/Rewrite rule: `/*` → `/index.html`
+  (Rewrite, not Redirect).
+- **TypeScript + `import.meta.env`**: needs a `src/vite-env.d.ts` file
+  with `/// <reference types="vite/client" />`, or a strict `tsc` build
+  (as run in CI/Render) fails even though local `vite dev` works fine.
+
+## Live
+
+- **App:** https://studio-booking-platform-1.onrender.com
+- **API docs:** https://studio-booking-platform.onrender.com/docs
+
+Hosted on Render's free tier — the first request after a period of
+inactivity can take up to a minute to wake the server back up; after
+that it runs normally.
+
 ## Portfolio card summary (for reference)
 
-> Ein Buchungssystem für Ressourcen (z. B. Proberäume, Equipment) mit
-> echter Authentifizierung (JWT), relationalem Datenmodell und
-> serverseitiger Konflikterkennung: Überschneidende Buchungen für dieselbe
-> Ressource werden zuverlässig abgelehnt. Bewusst fokussiert auf Kernlogik
-> — ohne Zahlungsabwicklung oder Admin-Rollen, um das Projekt in
-> überschaubarem Rahmen zu halten.
+> Ein Buchungssystem für Ressourcen wie Proberäume oder Equipment —
+> bewusst als vollständiges Full-Stack-Projekt aufgesetzt, um eine Lücke
+> zu schließen, die mir in Stellenausschreibungen wiederholt begegnet
+> ist: echte Backend-Erfahrung neben meiner Frontend-Expertise, inklusive
+> Authentifizierung, relationalem Datenmodell und einer API, die ich
+> selbst entworfen und implementiert habe.
+>
+> Das Backend (FastAPI, PostgreSQL, SQLAlchemy) bietet echte
+> JWT-basierte Authentifizierung mit gehashten Passwörtern sowie ein
+> relationales Schema aus Nutzer:innen, Ressourcen und Buchungen. Der
+> interessante Teil: Überschneidende Buchungen für dieselbe Ressource
+> werden serverseitig zuverlässig abgelehnt — keine Simulation, sondern
+> eine echte Prüfung auf Zeitraum-Konflikte.
+>
+> Bewusst schlank gehalten: keine Zahlungsabwicklung, keine
+> Admin-Rollen-Trennung und die Konflikterkennung läuft aktuell auf
+> Anwendungsebene statt über eine datenbankseitige
+> Exclusion-Constraint — der nächste sinnvolle Schritt für eine
+> produktionsreife Version.
