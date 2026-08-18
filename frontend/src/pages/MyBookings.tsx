@@ -14,6 +14,13 @@ export default function MyBookings() {
     setBookings((prev) => prev.filter((b) => b.id !== id))
   }
 
+  function parseUTCDate(dateString: string): Date {
+    // If the string already has timezone info (Z or +/-HH:MM), use it as-is.
+    // Otherwise, assume it's UTC and append 'Z' so the browser converts it correctly.
+    const hasTimezone = /Z|[+-]\d{2}:\d{2}$/.test(dateString)
+    return new Date(hasTimezone ? dateString : dateString + 'Z')
+  }
+
   return (
     <div>
       <h2>Meine Buchungen</h2>
@@ -21,7 +28,7 @@ export default function MyBookings() {
       {bookings.map((b) => (
         <div key={b.id} className="booking-item">
           <p>
-            {new Date(b.start_time).toLocaleString()} – {new Date(b.end_time).toLocaleString()}
+            {parseUTCDate(b.start_time).toLocaleString()} – {parseUTCDate(b.end_time).toLocaleString()}
           </p>
           <button onClick={() => cancel(b.id)}>Stornieren</button>
         </div>
