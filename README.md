@@ -106,15 +106,6 @@ redeploying or forking this:
   with `/// <reference types="vite/client" />`, or a strict `tsc` build
   (as run in CI/Render) fails even though local `vite dev` works fine.
 
-## Live
-
-- **App:** https://studio-booking-platform-1.onrender.com
-- **API docs:** https://studio-booking-platform.onrender.com/docs
-
-Hosted on Render's free tier — the first request after a period of
-inactivity can take up to a minute to wake the server back up; after
-that it runs normally.
-
 ## Portfolio card summary (for reference)
 
 > Ein Buchungssystem für Ressourcen wie Proberäume oder Equipment —
