@@ -38,6 +38,14 @@ def create_booking(
     if booking.end_time <= booking.start_time:
         raise HTTPException(status_code=400, detail="end_time must be after start_time")
 
+    resource = (
+        db.query(models.Resource)
+        .filter(models.Resource.id == booking.resource_id)
+        .first()
+    )
+    if resource is None:
+        raise HTTPException(status_code=404, detail="Resource not found")
+
     # Overlap check: does any existing booking for this resource intersect
     # the requested window? Two intervals [a_start, a_end) and [b_start, b_end)
     # overlap exactly when a_start < b_end AND a_end > b_start.
